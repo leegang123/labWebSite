@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="scnu.able.myapp.dao.FreeMapper">
+
+    <!-- 페이징 기능 처리를 위해서는 전체 리스트의 개수를 알아야 하므로 전체 리스트를 LIMIT 기능 없이 리턴해주는 함수 -->
+    <select id="freeListNoLimit" resultType="scnu.able.myapp.vo.free.Free">
+        select * from free
+    </select>
+
+    <!-- 실제로 List<Free>를 가져오는 메서드 -->
+    <select id="freeList" resultType="scnu.able.myapp.vo.free.Free">
+        select * from free order by freeIndate desc LIMIT #{startNum}, 10;
+    </select>
+
+    <!-- Free 객체를 실제로 db에 저장 -->
+    <insert id="freeWrite" parameterType="scnu.able.myapp.vo.free.Free">
+        insert into free(freeTitle, freeContent, freeWriter, freeFile) VALUES (#{freeTitle}, #{freeContent}, #{freeWriter}, #{freeFile})
+    </insert>
+
+    <!-- freeIdx를 얻어와서 free객체를 db로부터 꺼냄 -->
+    <select id="getFreeByFreeIdx" resultType="scnu.able.myapp.vo.free.Free">
+        select * from free where freeIdx = #{freeIdx}
+    </select>
+
+    <!-- Free 객체를 하나 받아와서 Free 객체를 특정할 수 있는 FreeIdx를 이용해 db에 저장된 Free 객체를 업데이트 해준다. -->
+    <update id="freeUpdate" parameterType="scnu.able.myapp.vo.free.Free">
+        update free set freeTitle = #{freeTitle}, freeContent = #{freeContent} where freeIdx = #{freeIdx}
+    </update>
+
+    <!-- Free 객체를 하나 받아와서 삭제해주는 메서드 -->
+    <delete id="freeDelete" parameterType="scnu.able.myapp.vo.free.Free">
+        delete from free where freeIdx = #{freeIdx}
+    </delete>
+
+    <!-- Free 객체 관련 메서들( 밑에부터는 FreeRepl(자유게시판 댓글 관련) 메서드들)) -->
+
+    <!-- foreign key 역할인 freeIdx를 받아와서 그에 해당하는 FreeRepl을 가져와주는 메서드 -->
+    <select id="freeReplList" resultType="scnu.able.myapp.vo.free.FreeRepl">
+        select * from freerepl where freeIdx = #{freeIdx}
+    </select>
+
+    <insert id="freeReplWrite" parameterType="scnu.able.myapp.vo.free.FreeRepl">
+        insert into freerepl(freeIdx, freeReplContent, freeReplWriter) VALUES (#{freeIdx}, #{freeReplContent}, #{freeReplWriter})
+    </insert>
+
+    <delete id="freeReplDelete">
+        delete from freerepl where freeReplIdx = #{idx}
+    </delete>
+
+    <select id="getFreeReplByFreeReplIdx" resultType="scnu.able.myapp.vo.free.FreeRepl">
+        select * from freerepl where freeReplIdx = #{idx}
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

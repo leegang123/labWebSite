@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="scnu.able.myapp.dao.MemberMapper">
+
+    <!-- 메서드 처음 설계를 잘못해서 중복이 많이 생김..... 어쩔 수 없이 페이지별로 쓰이는 메서드를 단락으로 구분 -->
+
+    <!-- 아이디 중복체크 -->
+    <select id="memIdCheck" resultType="scnu.able.myapp.vo.member.Member">
+        select * from member where memID=#{memID}
+    </select>
+
+    <!-- 이름 중복체크 -->
+    <select id="memNameCheck" resultType="scnu.able.myapp.vo.member.Member">
+        select * from member where memName=#{memName}
+    </select>
+
+    <!-- 실제 회원가입 -->
+    <insert id="memJoin" parameterType="scnu.able.myapp.vo.member.Member">
+        insert into member(memID, memPassword, memName, memAge, memEmail, memProfile, memPhone) VALUES (#{memID}, #{memPassword}, #{memName}, #{memAge}, #{memEmail}, #{memProfile}, #{memPhone})
+    </insert>
+
+    <!-- 로그인을 위해 멤버 객체 하나 얻어오기 -->
+    <select id="memLogin" resultType="scnu.able.myapp.vo.member.Member">
+        select * from member where memID=#{memID}
+    </select>
+
+    <!-- 멤버 인덱스를 통해 멤버 객체 하나 받아오기 -->
+    <select id="getMemberByMemIdx" resultType="scnu.able.myapp.vo.member.Member">
+        select * from member where memIdx=#{memIdx}
+    </select>
+
+
+
+
+
+    <!-- 회원정보수정 -->
+    <update id="memUpdate" parameterType="scnu.able.myapp.vo.member.Member">
+        update member set memID = #{memID}, memPassword=#{memPassword}, memAge = #{memAge}, memEmail = #{memEmail}, memPhone = #{memPhone} where memName = #{memName}
+    </update>
+
+    <!-- 이름을 통한 멤버 객체 하나 반환 -->
+    <select id="nameGetMember" resultType="scnu.able.myapp.vo.member.Member">
+        select * from member where memName=#{memName}
+    </select>
+
+    <!-- 멤버 프로필 사진 업데이트 -->
+    <update id="memProfileUpdate" parameterType="scnu.able.myapp.vo.member.Member">
+        update member set memProfile=#{memProfile} where memName=#{memName}
+    </update>
+
+    <!-- 아직 승인되지 않은 회원 목록 가져오기 -->
+    <select id="getNoAuthList" resultType="scnu.able.myapp.vo.member.Member">
+        select * from member where memAuth is null
+    </select>
+
+    <!-- 승인된 회원 목록 가져오기 -->
+    <select id="getAuthList" resultType="scnu.able.myapp.vo.member.Member">
+        select * from member where memAuth is not null and memStatus is null order by memIdx
+    </select>
+
+    <!-- 관리자 페이지에서 승인하면 학생 권한 부여 -->
+    <update id="memAuth">
+        update member set memAuth='학생' where memName=#{memName}
+    </update>
+
+    <!-- 아직 승인되지 않은 회원 바로 삭제할 때 -->
+    <delete id="memNoAuthDelete">
+        delete from member where memName=#{memName}
+    </delete>
+
+
+    <!-- 멤버 이메일 전송을 위해 멤버의 이메일 주소를 전부 얻어옴 -->
+    <select id="emailList" resultType="java.lang.String">
+        select memEmail from member
+    </select>
+
+    <select id="getOldMemberList" resultType="scnu.able.myapp.vo.member.Member">
+        select * from member where memStatus = 'old'
+    </select>
+
+    <select id="getMemberByMemName" resultType="scnu.able.myapp.vo.member.Member">
+        select * from member where memName=#{memName}
+    </select>
+
+    <update id="memStatusUpdate">
+        update member set memStatus = null where memIdx = #{oldMemIdx}
+    </update>
+
+    <update id="memStatusDelete">
+        update member set memStatus = 'old' where memIdx = #{memIdx}
+    </update>
+
+
+
+</mapper>

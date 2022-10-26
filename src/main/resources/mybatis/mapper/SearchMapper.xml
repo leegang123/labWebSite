@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="scnu.able.myapp.dao.SearchMapper">
+
+    <select id="noticeSearch" resultType="scnu.able.myapp.vo.notice.Notice">
+        select * from notice where noticeContent like #{query} order by noticeIndate desc
+    </select>
+
+    <select id="freeSearch" resultType="scnu.able.myapp.vo.free.Free">
+        select * from free where freeContent like #{query} order by freeIndate desc
+    </select>
+
+    <select id="manualSearch" resultType="scnu.able.myapp.vo.manual.Manual">
+        select * from manual where manualContent like #{query} order by manualIndate desc
+    </select>
+
+    <select id="labnoteSearch" resultType="scnu.able.myapp.vo.labnote.Labnote">
+        select * from labnote where labnoteComment like #{query} order by labnoteIndate desc
+    </select>
+
+    <select id="noticeList" resultType="scnu.able.myapp.vo.notice.Notice">
+        select * from notice order by noticeIndate desc LIMIT 10
+    </select>
+
+    <select id="labnoteList" resultType="scnu.able.myapp.vo.labnote.Labnote">
+        select * from labnote order by labnoteIndate desc LIMIT 10
+    </select>
+
+</mapper>

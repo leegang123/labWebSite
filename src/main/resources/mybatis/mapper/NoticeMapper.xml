@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="scnu.able.myapp.dao.NoticeMapper">
+
+    <!-- 전체 공지사항의 갯수를 알 수 반환해주는 쿼리 -->
+    <select id="noticeListNoLimit" resultType="scnu.able.myapp.vo.notice.Notice">
+        select * from notice;
+    </select>
+
+    <!-- 전체 공지사항 목록 가져오기 -->
+    <select id="noticeList" resultType="scnu.able.myapp.vo.notice.Notice">
+        select * from notice ORDER BY noticeTop desc, noticeIndate desc LIMIT #{startNum}, 10
+    </select>
+
+    <!-- 공지사항 작성 -->
+    <insert id="noticeWrite">
+        insert into notice (noticeTitle, noticeContent, noticeFile, noticeWriter, noticeTop) VALUES (#{noticeTitle}, #{noticeContent}, #{noticeFile}, #{noticeWriter}, #{noticeTop})
+    </insert>
+
+    <!-- NoticeIdx를 통해 Notice객체 하나 얻어오기 -->
+    <select id="getNoticeByIdx" resultType="scnu.able.myapp.vo.notice.Notice">
+        select * from notice where noticeIdx = #{noticeIdx}
+    </select>
+
+    <!-- 공지사항 상세 페이지에서 공지사항을 요청할 경우 조회수를 1 올려서 응답해준다 -->
+    <select id="getNoticeByIdxCountPlus" resultType="scnu.able.myapp.vo.notice.Notice">
+        select * from notice where noticeIdx = #{noticeIdx};
+        update notice set noticeCount = noticeCount + 1 where noticeIdx = #{noticeIdx};
+    </select>
+
+    <!-- 공지사항 객체를 받아와서 수정해준다 -->
+    <select id="noticeUpdate" parameterType="scnu.able.myapp.vo.notice.Notice">
+        update notice set noticeTitle = #{noticeTitle}, noticeContent = #{noticeContent} where noticeIdx= #{noticeIdx}
+    </select>
+
+    <!-- 공지사항 삭제 -->
+    <delete id="noticeDelete" parameterType="scnu.able.myapp.vo.notice.Notice">
+        delete from notice where noticeIdx= #{noticeIdx};
+        delete from noticerepl where noticeIdx= #{noticeIdx};
+    </delete>
+
+
+
+
+    <!-- 공지사항 인덱스를 하나 받아와서 그 공지사항에 달린 댓글 리스트를 받아온다. -->
+    <select id="noticeReplList" resultType="scnu.able.myapp.vo.notice.NoticeRepl">
+        select * from noticerepl where noticeIdx=#{noticeIdx}
+    </select>
+
+    <!-- 공지사항 댓글 작성 -->
+    <insert id="noticeReplWrite" parameterType="scnu.able.myapp.vo.notice.NoticeRepl">
+        insert into noticerepl (noticeIdx,noticeReplContent, noticeReplWriter) values(#{noticeIdx},#{noticeReplContent}, #{noticeReplWriter});
+
+    </insert>
+
+    <select id="getNoticeReplByNoticeReplIdx" resultType="scnu.able.myapp.vo.notice.NoticeRepl">
+        select * from noticerepl where noticeReplIdx = #{idx}
+    </select>
+
+    <delete id="noticeReplDelete">
+        delete from noticerepl where noticeReplIdx = #{idx}
+    </delete>
+
+
+
+
+
+
+</mapper>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="scnu.able.myapp.dao.LabnoteMapper">
+
+    <!-- memIdx(멤버의 인덱스)를 이용해 이 멤버가 작성한 프로젝트 전체를 리스트로 가져옴 -->
+    <select id="subjectListNoLimit" resultType="scnu.able.myapp.vo.labnote.Subject">
+        select * from subject where memIdx=#{memIdx} ORDER BY subjectIndate DESC;
+    </select>
+
+
+    <!-- memIdx(멤버의 인덱스)를 이용해 이 멤버가 작성한 프로젝트 전체를 리스트로 가져옴 -->
+    <select id="subjectList" resultType="scnu.able.myapp.vo.labnote.Subject">
+        select * from subject where memIdx=#{memIdx} ORDER BY subjectIndate DESC LIMIT #{startNum}, 10
+    </select>
+
+    <!-- Subject 객체를 받아와서 db에 저장해줌 -->
+    <insert id="subjectWrite" parameterType="scnu.able.myapp.vo.labnote.Subject">
+        insert into subject(memIdx, subjectTitle, subjectComment) VALUES (#{memIdx}, #{subjectTitle}, #{subjectComment})
+    </insert>
+
+    <!-- Primary Key인 SubjectIdx를 이용해서 Subject객체를 하나 반환 -->
+    <select id="getSubjectBySubjectIdx" resultType="scnu.able.myapp.vo.labnote.Subject">
+        select * from subject where subjectIdx=#{subjectIdx}
+    </select>
+
+    <!-- Subject 객체를 하나 받아와서 수정해줌 -->
+    <update id="subjectUpdate" parameterType="scnu.able.myapp.vo.labnote.Subject">
+        update subject set subjectTitle = #{subjectTitle}, subjectComment = #{subjectComment} where subjectIdx = #{subjectIdx}
+    </update>
+
+    <!-- SubjectIdx를 받아와서 그에 해당하는 Subject객체 지우기 -->
+    <delete id="subjectDelete">
+        delete from subject where subjectIdx = #{subjectIdx}
+    </delete>
+
+
+    <!-- _____________________________________  여기까지가 Subject CRUD   ______________________________________ !-->
+
+    <!-- 원래의 List<Labnote>를 가져오는 메서드는 Limit 기능이 추가되어 전체 개수를 알 수 없으므로 리스트에 속해있는 객체의 갯수를 알기 위한 목적으로 새 메서드 추가 -->
+    <select id="labnoteListNoLimit" resultType="scnu.able.myapp.vo.labnote.Labnote">
+        select * from labnote where subjectIdx = #{subjectIdx} ORDER BY labnoteIndate DESC
+    </select>
+
+
+    <!-- subjectIdx를 받아와서 그 Subject에 관련된 Labnote들 리스트 형태로 가져오기 -->
+    <select id="labnoteList" resultType="scnu.able.myapp.vo.labnote.Labnote">
+        select * from labnote where subjectIdx = #{subjectIdx} ORDER BY labnoteIndate DESC LIMIT #{startNum}, 10
+    </select>
+
+    <select id="allLabnoteList" resultType="scnu.able.myapp.vo.labnote.Labnote">
+        select * from labnote ORDER BY labnoteIndate DESC
+    </select>
+
+    <insert id="labnoteWrite" parameterType="scnu.able.myapp.vo.labnote.Labnote">
+        insert into labnote(subjectIdx, labnoteTitle, labnoteWriter, labnoteComment, labnoteFile) VALUES (#{subjectIdx}, #{labnoteTitle}, #{labnoteWriter}, #{labnoteComment}, #{labnoteFile})
+    </insert>
+
+    <!-- labnoteIdx를 받아와서 Labnote객체를 반환 -->
+    <select id="getLabnoteByLabnoteIdx" resultType="scnu.able.myapp.vo.labnote.Labnote">
+        select * from labnote where labnoteIdx = #{labnoteIdx}
+    </select>
+
+    <!-- labnoteIdx를 받아와서 LabnoteHit를 1 더해준 후 Labnote객체를 반환 -->
+    <select id="getLabnoteByLabnoteIdxCountPlus" resultType="scnu.able.myapp.vo.labnote.Labnote">
+        update labnote set labnoteHit := labnoteHit+1 where labnoteIdx = #{labnoteIdx};
+        select * from labnote where labnoteIdx = #{labnoteIdx};
+
+    </select>
+
+
+    <!-- Labnote 객체를 하나 받아와서 db에 저장된 값을 업데이트 해 준다. -->
+    <update id="labnoteUpdate" parameterType="scnu.able.myapp.vo.labnote.Labnote">
+        update labnote set labnoteTitle = #{labnoteTitle}, labnoteComment = #{labnoteComment} where labnoteIdx = #{labnoteIdx}
+    </update>
+
+    <!-- labnoteIdx를 받아와서 db에 저장된 Labnote 객체를 하나 삭제해줌 -->
+    <delete id="labnoteDelete">
+        delete from labnote where labnoteIdx = #{labnoteIdx} LIMIT 20;
+    </delete>
+
+
+    <!-- ___________________________________________________ 여기까지 labnote CRUD _____________________________________________________ -->
+
+
+    <!-- labnoteIdx를 받아와서 그에 해당하는 List<LabnoteRepl>을 반환해줌 -->
+    <select id="labnoteReplList" resultType="scnu.able.myapp.vo.labnote.LabnoteRepl">
+        select * from labnoterepl where labnoteIdx = #{labnoteIdx}
+    </select>
+
+    <!-- LabnoteRepl 객체를 하나 받아와서 db에 저장해줌 -->
+    <insert id="labnoteReplWrite" parameterType="scnu.able.myapp.vo.labnote.LabnoteRepl">
+        insert into labnoterepl(labnoteIdx, subjectIdx, labnoteReplWriter, labnoteReplContent) VALUES (#{labnoteIdx}, #{subjectIdx}, #{labnoteReplWriter}, #{labnoteReplContent})
+    </insert>
+
+    <select id="getLabnoteReplByLabnoteReplIdx" resultType="scnu.able.myapp.vo.labnote.LabnoteRepl">
+        select * from labnoterepl where labnoteReplIdx = #{idx}
+    </select>
+
+    <delete id="labnoteReplDelete">
+        delete from labnoterepl where labnoteReplIdx = #{idx}
+    </delete>
+
+    <select id="allLabnoteListLimit" resultType="scnu.able.myapp.vo.labnote.Labnote">
+        select * from labnote order by labnoteIndate desc LIMIT 10
+    </select>
+
+
+</mapper>

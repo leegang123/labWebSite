@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="scnu.able.myapp.dao.ManualMapper">
+
+    <!-- 페이징 기능 처리를 위해서는 전체 리스트의 개수를 알아야 하므로 전체 리스트를 LIMIT 기능 없이 리턴해주는 함수 -->
+    <select id="manualListNoLimit" resultType="scnu.able.myapp.vo.manual.Manual">
+        select * from manual
+    </select>
+
+    <!-- 실제로 List<Manual>를 가져오는 메서드 -->
+    <select id="manualList" resultType="scnu.able.myapp.vo.manual.Manual">
+        select * from manual order by manualIndate desc LIMIT #{startNum}, 10;
+    </select>
+
+    <!-- Manual 객체를 실제로 db에 저장 -->
+    <insert id="manualWrite" parameterType="scnu.able.myapp.vo.manual.Manual">
+        insert into manual(manualTitle, manualContent, manualWriter, manualFile) VALUES (#{manualTitle}, #{manualContent}, #{manualWriter}, #{manualFile})
+    </insert>
+
+    <!-- manualIdx를 얻어와서 manual객체를 db로부터 꺼냄 -->
+    <select id="getManualByManualIdx" resultType="scnu.able.myapp.vo.manual.Manual">
+        select * from manual where manualIdx = #{manualIdx}
+    </select>
+
+    <!-- Manual 객체를 하나 받아와서 Manual 객체를 특정할 수 있는 ManualIdx를 이용해 db에 저장된 Manual 객체를 업데이트 해준다. -->
+    <update id="manualUpdate" parameterType="scnu.able.myapp.vo.manual.Manual">
+        update manual set manualTitle = #{manualTitle}, manualContent = #{manualContent} where manualIdx = #{manualIdx}
+    </update>
+
+    <!-- Manual 객체를 하나 받아와서 삭제해주는 메서드 -->
+    <delete id="manualDelete" parameterType="scnu.able.myapp.vo.manual.Manual">
+        delete from manual where manualIdx = #{manualIdx}
+    </delete>
+
+    <!-- Manual 객체 관련 메서들( 밑에부터는 ManualRepl(자유게시판 댓글 관련) 메서드들)) -->
+
+    <!-- foreign key 역할인 manualIdx를 받아와서 그에 해당하는 ManualRepl을 가져와주는 메서드 -->
+    <select id="manualReplList" resultType="scnu.able.myapp.vo.manual.ManualRepl">
+        select * from manualrepl where manualIdx = #{manualIdx}
+    </select>
+
+    <insert id="manualReplWrite" parameterType="scnu.able.myapp.vo.manual.ManualRepl">
+        insert into manualrepl(manualIdx, manualReplContent, manualReplWriter) VALUES (#{manualIdx}, #{manualReplContent}, #{manualReplWriter})
+    </insert>
+
+    <select id="getManualReplByManualReplIdx" resultType="scnu.able.myapp.vo.manual.ManualRepl">
+        select * from manualrepl where manualReplIdx = #{idx}
+    </select>
+
+    <delete id="manualReplDelete">
+        delete from manualrepl where manualReplIdx = #{idx}
+    </delete>
+
+</mapper>
